@@ -1,0 +1,6 @@
+﻿  BigInt.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.h(37): warning C4251: 'CryptoLib::BigInt::number': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'CryptoLib::BigInt'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xstring(3997): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.cpp(68): warning C4018: '<': signed/unsigned mismatch
+  CryptoLib.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.dll
+  CryptoLib.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.pdb (Partial PDB)
