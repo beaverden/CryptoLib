@@ -6,6 +6,9 @@
 #include "Math.h"
 #include "LongMultiplyReference.h"
 #include "BigInt.h"
+#include "Primitives.h"
+#include "bignum.h"
+#include <sstream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CryptoLib;
@@ -136,64 +139,143 @@ namespace CryptoLibtest
 				result += (char)((rand() % 10) + '0');
 			}
 			if (length == 0) return "0";
+			if (rand() % 2) result = '-' + result;
 			return result;
 		}
-		TEST_METHOD(BigIntTest)
+		
+		long long GenerateRandomInt()
 		{
-			BigInt a("1");
-			BigInt b("2");
-			BigInt c = a + b;
-			Assert::AreEqual(c.GetValue().c_str(), "3", "BigInt: add test failed", LINE_INFO());
-
-			a = BigInt(0);
-			c = a + 1 + 2 + 3;
-			c += BigInt(4);
-			((c += 5) += 6) += 7;
-			Assert::AreEqual(c.GetValue().c_str(), "28", "BigInt: int add test failed", LINE_INFO());
+			return rand() * rand();
 		}
 
-		TEST_METHOD(MultiplyTest)
+		TEST_METHOD(BigIntTest)
 		{
-			BigInt a("1");
-			for (size_t i = 1; i <= 100; i++)
+			srand(time(0));
+
+			for (size_t i = 0; i < 50; i++)
 			{
-				a *= i;
+				int alen = rand() % 50 + 1;
+				int blen = rand() % 50 + 1;
+				std::string sa = GenerateRandomNumber(alen);
+				std::string sb = GenerateRandomNumber(blen);
+				BigInt ba(sa);
+				BigInt bb(sb);
+				bigint ia(sa);
+				bigint ib(sb);
+				char msg[10000] = { 0 };
+				sprintf(msg, "%s\n    %s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str(), (ba / bb).GetValue().c_str());
+				Logger::WriteMessage(msg);
+				
+				Assert::IsTrue((ba + bb).GetValue() == (ia + ib).ToString(), L"Add test failed", LINE_INFO());
+				Assert::IsTrue((ba - bb).GetValue() == (ia - ib).ToString(), L"Sub test failed", LINE_INFO());
+				Assert::IsTrue((ba * bb).GetValue() == (ia * ib).ToString(), L"Mul test failed", LINE_INFO());
+				if (bb !=0 ) Assert::IsTrue((ba / bb).GetValue() == (ia / ib).ToString(), L"Div test failed", LINE_INFO());
+				//Assert::IsTrue(bigint((ba - bb).GetValue()) == (ia - ib), L"Sub test failed", LINE_INFO());
 			}
-			Assert::AreEqual(a.GetValue().c_str(), "93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000", "BigInt: zero multiply test failed", LINE_INFO());
+			BigInt a, b, c;
+			a = BigInt("145350");
+			b = BigInt("255925395");
+			c = CryptoLib::Primitives::GCD(a, b);
+			Assert::AreEqual(c.GetValue().c_str(), "765", "Gcd test fail", LINE_INFO());
+
+			a = BigInt("17");
+			b = BigInt("32");
+			c = CryptoLib::Primitives::GCD(a, b);
+			Assert::AreEqual(c.GetValue().c_str(), "1", "Gcd test fail", LINE_INFO());
+
+			a = BigInt("17");
+			b = BigInt("32");
+			CryptoLib::Primitives::Vector2D result;
+			result = CryptoLib::Primitives::ExtendedGCD(a, b, &c);
+			Assert::AreEqual(c.GetValue().c_str(), "1", "Ext Gcd test fail", LINE_INFO());
+			
+			for (size_t i = 0; i < 500; i++)
+			{
+				int alen = rand() % 50 + 1;
+				int blen = rand() % 50 + 1;
+				std::string sa = GenerateRandomNumber(alen);
+				std::string sb = GenerateRandomNumber(blen);
+				BigInt a(sa);
+				BigInt b(sb);
+				bigint ia(sa);
+				bigint ib(sb);
+
+				Assert::IsTrue((a == b) == (ia == ib), L"E test failed", LINE_INFO());
+				Assert::IsTrue((a > b) == (ia > ib), L"G test failed", LINE_INFO());
+				Assert::IsTrue((a >= b) == (ia >= ib), L"Ge test failed", LINE_INFO());
+				Assert::IsTrue((a < b) == (ia < ib), L"L test failed", LINE_INFO());
+				Assert::IsTrue((a <= b) == (ia <= ib), L"Le test failed", LINE_INFO());
+				Assert::IsTrue((a != b) == (ia != ib), L"Ne test failed", LINE_INFO());
+			}
+		}
+
+
+		TEST_METHOD(DivideTest)
+		{
+			BigInt a("54305439545093405934094350934095034509345093450934509345094350934509340593409534095345093459034059345043982348925453498");
+			BigInt b("324283248754378534875438");
+			BigInt c = ((a / b) / b) / b;
+			Assert::AreEqual(c.GetValue().c_str(), "1592464602165876631668101864376880269997201205147", "Divide long failed", LINE_INFO());
 
 			for (size_t i = 0; i < 40; i++)
 			{
-				int length1 = rand() % 300;
-				int length2 = rand() % 300;
-				char output[200] = { 0 };
-				sprintf(output, "#%d Lengths: %d %d", i, length1, length2);
-				Logger::WriteMessage(output);
+		
+				long long t1 = GenerateRandomInt();
+				long long t2 = GenerateRandomInt();
 
-				std::string t1 = GenerateRandomNumber(length1);
-				std::string t2 = GenerateRandomNumber(length2);
-
-				number r1(t1);
-				number r2(t2);
-				r1 *= r2;
-				
 				BigInt b1(t1);
 				BigInt b2(t2);
-				BigInt b3;
-				try
-				{
-					b3 = b1 * b2;
-				}
-				catch (std::exception e)
-				{
-					char msg[100];
-					sprintf(msg, "%d %d\n", b1.GetLength(), b2.GetLength());
-					Logger::WriteMessage(msg);
-				}
-				
-				std::string t3 = b3.GetValue();
-				std::string r3 = r1.get();
+				BigInt b3 = b1 / b2;
+				std::string res = std::to_string(t1 / t2);
+				Assert::AreEqual(b3.GetValue().c_str(), res.c_str(), "Division of random numbers test fail", LINE_INFO());
+			}
+		}
 
-				Assert::AreEqual(t3.c_str(), r3.c_str(), "Multiply of random numbers test fail", LINE_INFO());
+		TEST_METHOD(GCDTest)
+		{
+			for (size_t i = 0; i < 50; i++)
+			{
+
+				int alen = rand() % 25 + 1;
+				int blen = rand() % 25 + 1;
+				std::string sa = GenerateRandomNumber(alen);
+				std::string sb = GenerateRandomNumber(blen);
+				BigInt ba(sa);
+				BigInt bb(sb);
+				char msg[10000] = { 0 };
+				sprintf(msg, "%s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str());
+				Logger::WriteMessage(msg);
+
+				CryptoLib::Primitives::Vector2D res;
+				BigInt gcd;
+				res = Primitives::ExtendedGCD(ba, bb, &gcd);
+				BigInt val = res.alpha * ba + res.beta * bb;
+				Assert::AreEqual(gcd.GetValue().c_str(), val.GetValue().c_str(), "GCD fail", LINE_INFO());
+			}
+		}
+		TEST_METHOD(POWTest)
+		{
+			for (size_t i = 0; i < 50; i++)
+			{
+
+				int alen = rand() % 25 + 1;
+				int blen = rand() % 2 + 1;
+				std::string sa = GenerateRandomNumber(alen);
+				std::string sb = GenerateRandomNumber(blen);
+				BigInt ba(sa);
+				BigInt bb(sb);
+
+				char msg[10000] = { 0 };
+				sprintf(msg, "%s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str());
+				Logger::WriteMessage(msg);
+
+				BigInt mul = 1;
+				for (BigInt i = 0; i < bb; i += 1)
+				{
+					mul *= ba;
+				}
+				BigInt pow = Primitives::POW(ba, bb);
+				Assert::AreEqual(pow.GetValue().c_str(), mul.GetValue().c_str(), "POW fail", LINE_INFO());
 			}
 		}
 	};

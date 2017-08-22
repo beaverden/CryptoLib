@@ -141,8 +141,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInt.h" />
-    <ClInclude Include="Math.h" />
     <ClInclude Include="MD5.h" />
+    <ClInclude Include="Primitives.h" />
     <ClInclude Include="ROT.h" />
     <ClInclude Include="SHA1.h" />
     <ClInclude Include="SHA256.h" />
@@ -153,8 +153,8 @@
   <ItemGroup>
     <ClCompile Include="BigInt.cpp" />
     <ClCompile Include="CryptoLib.cpp" />
-    <ClCompile Include="Math.cpp" />
     <ClCompile Include="MD5.cpp" />
+    <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="ROT.cpp" />
     <ClCompile Include="SHA1.cpp" />
     <ClCompile Include="SHA256.cpp" />

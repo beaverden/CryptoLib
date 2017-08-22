@@ -1,0 +1,390 @@
+#include <string>
+#include <ostream>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class BigInt
+{
+public:
+	BigInt();
+	BigInt(std::string s);
+	BigInt(long long s);
+
+	size_t GetLength() const;
+	std::string GetValue() const;
+	void SetValue(std::string newValue);
+
+	std::ostream& operator<<(std::ostream& output);
+	std::string& operator<<(std::string& output);
+
+	BigInt& operator=(const BigInt& other);
+
+	bool operator==(const BigInt& other) const;
+	bool operator!=(const BigInt& other) const;
+	bool operator>(const BigInt& other) const;
+	bool operator>=(const BigInt& other) const;
+	bool operator<(const BigInt& other) const;
+	bool operator<=(const BigInt& other) const;
+
+	BigInt operator+(const BigInt& other) const;
+	BigInt operator+(const long long& other) const;
+	BigInt& operator+=(const BigInt& other);
+	BigInt& operator+=(const long long other);
+
+	BigInt operator*(const BigInt& other) const;
+	BigInt operator*(const long long& other) const;
+	BigInt& operator*=(const BigInt& other);
+	BigInt& operator*=(const long long& other);
+
+	BigInt operator-(const BigInt& other) const;
+	BigInt operator-(const long long& other) const;
+	BigInt& operator-=(const BigInt& other);
+	BigInt& operator-=(const long long& other);
+
+	BigInt operator/(const BigInt& other) const;
+	BigInt operator/(const long long& other) const;
+	//BigInt& operator/=(const BigInt& other);
+	//BigInt& operator/=(const long long& other);
+
+	std::string toString(long long a) const
+	{
+		std::string res = "";
+		if (a == 0) res = "0";
+		while (a>0) {
+			res = (char)(a % 10 + '0') + res;
+			a/=10;
+		}
+		return res;
+	}
+	
+	~BigInt();
+private:
+	std::string number;
+	
+};
+
+
+BigInt::BigInt()
+{
+	this->number = "0";
+}
+
+BigInt::~BigInt()
+{
+}
+
+BigInt::BigInt(std::string s)
+{
+	this->number = s;
+}
+
+BigInt::BigInt(long long s)
+{
+	this->number = toString(s);
+}
+
+size_t BigInt::GetLength() const 
+{
+	return this->number.length();
+}
+
+std::string BigInt::GetValue() const
+{
+	return this->number;
+}
+
+void BigInt::SetValue(std::string newValue)
+{
+	this->number = newValue;
+}
+
+std::ostream& BigInt::operator<<(std::ostream& output)
+{
+	output << this->number;
+	return output;
+}
+
+std::string& BigInt::operator<<(std::string& output)
+{
+	output = this->number;
+	return output;
+}
+
+BigInt& BigInt::operator=(const BigInt& other)
+{
+	if (this != &other)
+	{
+		this->number = other.GetValue();
+	}
+	return *this;
+}
+
+bool BigInt::operator==(const BigInt& other) const
+{
+	if (this->number.length() != other.GetLength()) return false;
+	std::string otherString = other.GetValue();
+
+	for (size_t i = 0; i < this->number.length(); i++)
+	{
+		if (this->number[i] != otherString[i]) return false;
+	}
+	return true;
+}
+
+bool BigInt::operator!=(const BigInt& other) const
+{
+	return !((*this) == other);
+}
+
+bool BigInt::operator>(const BigInt& other) const
+{
+	if (this->number.length() > other.GetLength()) return true;
+	if (this->number.length() < other.GetLength()) return false;
+	std::string otherString = other.GetValue();
+
+	for (size_t i = 0; i < this->number.length(); i++)
+	{
+		if (this->number[i] > otherString[i]) return true;
+		if (this->number[i] < otherString[i]) return false;
+	}
+	return false;
+}
+
+bool BigInt::operator>=(const BigInt& other) const
+{
+	return ((*this) > other || (*this) == other);
+}
+
+bool BigInt::operator<(const BigInt& other) const
+{
+	if (this->number.length() < other.GetLength()) return true;
+	if (this->number.length() > other.GetLength()) return false;
+	std::string otherString = other.GetValue();
+
+	for (size_t i = 0; i < this->number.length(); i++)
+	{
+		if (this->number[i] < otherString[i]) return true;
+		if (this->number[i] > otherString[i]) return false;
+	}
+	return false;
+}
+
+bool BigInt::operator<=(const BigInt& other) const
+{
+	return ((*this) < other || (*this) == other);
+}
+
+
+BigInt BigInt::operator+(const BigInt& other) const
+{
+	std::string a = this->number, b = other.number;
+	while (a.length() < b.length()) a = "0" + a;
+	while (b.length() < a.length()) b = "0" + b;
+	std::string c;
+	int r = 0, t;
+	for (int i = 0; i<a.length(); i++) 
+	{
+		int x = (a[a.length() - i - 1] - '0'),
+			y = (b[a.length() - i - 1] - '0');
+		t = x + y + r;
+		c += (char)((t % 10) + '0');
+		r = t / 10;
+	}
+	if (r != 0) c += (char)(r + '0');
+	reverse(c.begin(), c.end());
+	return BigInt(c);
+}
+
+BigInt BigInt::operator+(const long long &other) const
+{
+	BigInt big_other(other);
+	return (*this) + big_other;
+}
+
+BigInt& BigInt::operator+=(const BigInt& other)
+{
+	(*this) = (*this) + other;
+	return (*this);
+}
+
+BigInt& BigInt::operator+=(const long long other)
+{
+	(*this) = (*this) + other;
+	return (*this);
+}
+
+BigInt BigInt::operator*(const BigInt& other) const
+{
+	std::string a = this->number;
+	std::string b = other.GetValue();
+	std::vector <unsigned char> res(a.length() + b.length() + 2);
+	std::fill(res.begin(), res.end(), 0);
+
+	reverse(a.begin(), a.end());
+	reverse(b.begin(), b.end());
+
+	if (a.length()<b.length()) swap(a, b);
+	size_t lenA = a.length(),
+		   lenB = b.length(),
+		   finlen = 0;
+	for (size_t i = 0; i<lenB; i++) 
+	{
+		unsigned char rem = 0;
+		for (size_t j = 0; j<lenA; j++)
+		{
+			unsigned char x = b[i] - '0',
+					y = a[j] - '0';
+			int prod = x*y + rem + res[i+j];
+			res[i+j] = prod % 10;
+			rem = prod / 10;
+		}
+		if (rem > 0)
+		{
+			res[i + lenA] = (res[i + lenA] + rem) % 10;
+		}
+	}
+
+	std::string fin = "";
+	for (int i = lenA + lenB + 1; i >= 0; i--)
+	{
+		fin += (char)(res[i] + '0');
+	}
+	while (fin.length() > 1 && fin[0] == '0' ) fin.erase(0, 1);
+	return BigInt(fin);
+}
+
+BigInt BigInt::operator*(const long long& other) const
+{
+	BigInt big_other(other);
+	return (*this) * big_other;
+}
+
+BigInt& BigInt::operator*=(const BigInt& other)
+{
+	(*this) = (*this) * other;
+	return (*this);
+}
+
+BigInt& BigInt::operator*=(const long long& other)
+{
+	(*this) = (*this) * other;
+	return (*this);
+}
+
+BigInt BigInt::operator-(const BigInt& other) const
+{
+	std::string a = this->number, 
+				b = other.GetValue();
+
+	while (a.length() < b.length()) a = "0" + a;
+	while (b.length() < a.length()) b = "0" + b;
+	int borrow = 0, neg = 0;
+
+	if (a<b) 
+	{ 
+		swap(a, b);
+		neg = 1;
+	}
+	std::string res;
+
+	for (int i = 0; i < a.length(); i++) 
+	{
+		int x = a[a.length() - i - 1] - '0',
+			y = b[a.length() - i - 1] - '0',
+			z = 0;
+		if (x - borrow < y) 
+		{
+			z = (10 + x - y - borrow);
+			if (borrow == 0) borrow++;
+		}
+		else 
+		{
+			z = x - borrow - y;
+			borrow = 0;
+		}
+		res += (char)(z + '0');
+	}
+	reverse(res.begin(), res.end());
+	while (res.length() > 1 && res[0] == '0' ) res.erase(0, 1);
+	if (neg == 1) res = "-" + res;
+	BigInt result(res);
+	return result;
+}
+
+BigInt BigInt::operator-(const long long& other) const
+{
+	BigInt big_other(other);
+	return (*this) - big_other;
+}
+
+BigInt& BigInt::operator-=(const BigInt& other)
+{
+	(*this) = (*this) - other;
+	return (*this);
+}
+
+BigInt& BigInt::operator-=(const long long& other)
+{
+	(*this) = (*this) - other;
+	return (*this);
+}
+
+
+BigInt BigInt::operator/(const BigInt& other) const
+{
+	
+	if ((*this) < other)
+	{
+		return BigInt(0);
+	}
+
+	BigInt l("1"), r = (*this), last;
+	while (l <= r) 
+	{
+		BigInt mid = l + r;
+		mid = mid / 2;
+		BigInt t = mid * other;		
+		if (t <= (*this))
+		{
+			last = mid;
+			l = mid + 1;
+		}
+		else 
+		{
+			r = mid - 1;
+		}
+	}
+	return last;
+}
+
+
+BigInt BigInt::operator/(const long long& other) const
+{
+	std::string a = this->number;
+	std::string res = "";
+	long long val = other, x = 0, k = 0;
+	for (size_t i = 0; i<a.length(); i++) {
+		int g = (a[i] - '0');
+		if (g == 0 && x == 0) { res += "0"; continue; }
+		x = x * 10 + g;
+		if (x < val && k == 0 && i<a.length() - 1) continue;
+		k = 1;
+		long long t = x / val;
+		res += toString(t);
+		x %= val;
+	}
+	while (res[0] == '0' && res.length()>1) res.erase(0, 1);
+
+	BigInt result(res);
+	return result;
+}
+
+int main()
+{
+	std::string a; int b;
+	std::cin >> a >> b;
+	BigInt c = BigInt(a) / b;
+	std::cout << c.GetValue();
+  	return 0;
+}
