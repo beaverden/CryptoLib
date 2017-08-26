@@ -143,6 +143,11 @@ namespace CryptoLibtest
 			return result;
 		}
 		
+		TEST_METHOD(_start)
+		{
+			srand(time(0));
+		}
+
 		long long GenerateRandomInt()
 		{
 			return rand() * rand();
@@ -170,6 +175,7 @@ namespace CryptoLibtest
 				Assert::IsTrue((ba - bb).GetValue() == (ia - ib).ToString(), L"Sub test failed", LINE_INFO());
 				Assert::IsTrue((ba * bb).GetValue() == (ia * ib).ToString(), L"Mul test failed", LINE_INFO());
 				if (bb !=0 ) Assert::IsTrue((ba / bb).GetValue() == (ia / ib).ToString(), L"Div test failed", LINE_INFO());
+				if (bb != 0) Assert::IsTrue((ba % bb).GetValue() == (ia % ib).ToString(), L"Div test failed", LINE_INFO());
 				//Assert::IsTrue(bigint((ba - bb).GetValue()) == (ia - ib), L"Sub test failed", LINE_INFO());
 			}
 			BigInt a, b, c;
@@ -208,7 +214,6 @@ namespace CryptoLibtest
 				Assert::IsTrue((a != b) == (ia != ib), L"Ne test failed", LINE_INFO());
 			}
 		}
-
 
 		TEST_METHOD(DivideTest)
 		{
@@ -252,21 +257,51 @@ namespace CryptoLibtest
 				BigInt val = res.alpha * ba + res.beta * bb;
 				Assert::AreEqual(gcd.GetValue().c_str(), val.GetValue().c_str(), "GCD fail", LINE_INFO());
 			}
+
 		}
+
+		TEST_METHOD(InverseTest)
+		{
+			size_t i = 0;
+			while (i < 50)
+			{
+				int alen = rand() % 25 + 1;
+				int blen = rand() % 25 + 1;
+				std::string sa = GenerateRandomNumber(alen);
+				std::string sb = GenerateRandomNumber(blen);
+				BigInt ba(sa);
+				BigInt bb(sb);
+				
+
+				if (Primitives::GCD(ba, bb) == 1 && bb > 1)
+				{
+					i++;
+				}
+				else continue;
+				char msg[10000] = { 0 };
+				sprintf(msg, "%s\n    %s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str(), Primitives::InverseModM(ba, bb).GetValue().c_str());
+				Logger::WriteMessage(msg);
+
+				Assert::IsTrue(Primitives::MathematicalModulo(Primitives::InverseModM(ba, bb) * ba, bb) == 1);
+			}
+		}
+
 		TEST_METHOD(POWTest)
 		{
 			for (size_t i = 0; i < 50; i++)
 			{
 
-				int alen = rand() % 25 + 1;
+				int alen = rand() % 13 + 1;
 				int blen = rand() % 2 + 1;
+				int mlen = rand() % 5 + 1;
 				std::string sa = GenerateRandomNumber(alen);
 				std::string sb = GenerateRandomNumber(blen);
+				std::string sm = GenerateRandomNumber(mlen);
 				BigInt ba(sa);
 				BigInt bb(sb);
-
+				BigInt bm(sm);
 				char msg[10000] = { 0 };
-				sprintf(msg, "%s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str());
+				sprintf(msg, "%s\n    %s\n     %s\n", ba.GetValue().c_str(), bb.GetValue().c_str(), bm.GetValue().c_str());
 				Logger::WriteMessage(msg);
 
 				BigInt mul = 1;
@@ -275,7 +310,8 @@ namespace CryptoLibtest
 					mul *= ba;
 				}
 				BigInt pow = Primitives::POW(ba, bb);
-				Assert::AreEqual(pow.GetValue().c_str(), mul.GetValue().c_str(), "POW fail", LINE_INFO());
+				Assert::AreEqual(pow.GetValue().c_str(), mul.GetValue().c_str(), L"POW fail", LINE_INFO());
+				Assert::IsTrue(Primitives::POWModM(ba, bb, bm) == (mul%bm));
 			}
 		}
 	};

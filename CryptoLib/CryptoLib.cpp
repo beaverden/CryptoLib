@@ -25,8 +25,11 @@ std::string GenerateRandomNumber(unsigned int length)
 
 int main(int args, char* argv[])
 {
-	srand(time(0));
-	for (size_t i = 0; i < 50; i++)
+	//srand(time(0));
+	size_t i = 0;
+	Primitives::POWModM(BigInt("93440596342887581257"), BigInt("44"), BigInt("-429"));
+
+	while (i < 50)
 	{
 		int alen = rand() % 2 + 1;
 		int blen = rand() % 2 + 1;
@@ -34,10 +37,24 @@ int main(int args, char* argv[])
 		std::string sb = GenerateRandomNumber(blen);
 		BigInt ba(sa);
 		BigInt bb(sb);
-		Primitives::Vector2D res;
-		BigInt gcd;
-		res = Primitives::ExtendedGCD(ba, bb, &gcd);
-		BigInt val = res.alpha * ba + res.beta * bb;
+
+
+		if (Primitives::GCD(ba, bb) == 1)
+		{
+			i++;
+		}
+		else continue;
+		if (ba == -4)
+		{
+			int j = 0;
+		}
+		char msg[10000] = { 0 };
+		BigInt res = Primitives::MathematicalModulo((Primitives::InverseModM(ba, bb) * ba), bb);
+		printf("%s\n    %s\n    %s\n", ba.GetValue().c_str(), bb.GetValue().c_str(), res.GetValue().c_str());
+		if (res != 1)
+		{
+			int j = 0;
+		}
 	}
 
 	return 0;

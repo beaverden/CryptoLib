@@ -1,6 +1,39 @@
-﻿  Primitives.cpp
+﻿  stdafx.cpp
+  SHA256.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha256.cpp(37): warning C4244: 'initializing': conversion from 'uint64_t' to 'unsigned int', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha256.cpp(39): warning C4244: 'argument': conversion from 'uint64_t' to '::size_t', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha256.cpp(111): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha256.cpp(125): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  SHA1.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha1.cpp(22): warning C4244: 'initializing': conversion from 'uint64_t' to 'unsigned int', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha1.cpp(24): warning C4244: 'argument': conversion from 'uint64_t' to '::size_t', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha1.cpp(101): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\sha1.cpp(115): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  ROT.cpp
+  Primitives.cpp
 c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.h(84): warning C4251: 'CryptoLib::BigInt::number': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'CryptoLib::BigInt'
   c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xstring(3997): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
 c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\primitives.h(17): warning C4091: '__declspec(dllexport)': ignored on left of 'CryptoLib::Primitives::Vector2D' when no variable is declared
+  MD5.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\md5.cpp(116): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\md5.cpp(129): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  CryptoLib.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.h(84): warning C4251: 'CryptoLib::BigInt::number': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'CryptoLib::BigInt'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xstring(3997): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\primitives.h(17): warning C4091: '__declspec(dllexport)': ignored on left of 'CryptoLib::Primitives::Vector2D' when no variable is declared
+  BigInt.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.h(84): warning C4251: 'CryptoLib::BigInt::number': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'CryptoLib::BigInt'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xstring(3997): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.cpp(162): warning C4018: '<': signed/unsigned mismatch
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.cpp(288): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  LINK : C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.dll not found or not built by the last incremental link; performing full link
+     Creating library C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.lib and object C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.exp
   CryptoLib.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.dll
   CryptoLib.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLib.pdb (Partial PDB)
