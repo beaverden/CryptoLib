@@ -23,7 +23,11 @@
     <ProjectGuid>{3263150A-8C76-4864-A8CA-314E218E1C60}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CryptoLibTest</RootNamespace>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+=======
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+>>>>>>> d15bceaa2fee974fbdfb52da11974f7a0b5e19b7
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

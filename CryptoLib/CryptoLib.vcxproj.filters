@@ -45,9 +45,12 @@
     <ClInclude Include="Primitives.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="DES.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> d15bceaa2fee974fbdfb52da11974f7a0b5e19b7
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -74,8 +77,11 @@
     <ClCompile Include="Primitives.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="DES.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+>>>>>>> d15bceaa2fee974fbdfb52da11974f7a0b5e19b7
   </ItemGroup>
 </Project>

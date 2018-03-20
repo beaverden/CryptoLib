@@ -8,9 +8,13 @@
 #include "BigInt.h"
 #include "Primitives.h"
 #include "bignum.h"
+<<<<<<< HEAD
 #include "DES.h"
 #include <sstream>
 #include <bitset>
+=======
+#include <sstream>
+>>>>>>> d15bceaa2fee974fbdfb52da11974f7a0b5e19b7
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CryptoLib;
@@ -316,6 +320,7 @@ namespace CryptoLibtest
 				Assert::IsTrue(Primitives::POWModM(ba, bb, bm) == (mul%bm));
 			}
 		}
+<<<<<<< HEAD
 
 		
 	};
@@ -394,3 +399,7 @@ namespace CryptoLibtest
 		}
 	};
 };
+=======
+	};
+}
+>>>>>>> d15bceaa2fee974fbdfb52da11974f7a0b5e19b7
