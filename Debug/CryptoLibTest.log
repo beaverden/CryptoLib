@@ -1,0 +1,17 @@
+﻿  unittest1.cpp
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\bigint.h(84): warning C4251: 'CryptoLib::BigInt::number': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'CryptoLib::BigInt'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.10.25017\include\xstring(3997): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolib\primitives.h(17): warning C4091: '__declspec(dllexport)': ignored on left of 'CryptoLib::Primitives::Vector2D' when no variable is declared
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(148): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(158): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(171): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(251): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(282): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+c:\users\drozimovschii\documents\visual studio 2017\projects\cryptolib\cryptolibtest\unittest1.cpp(304): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+     Creating library C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLibTest.lib and object C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLibTest.exp
+  CryptoLibTest.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLibTest.dll
+  CryptoLibTest.vcxproj -> C:\Users\drozimovschii\documents\visual studio 2017\Projects\CryptoLib\Debug\CryptoLibTest.pdb (Partial PDB)
