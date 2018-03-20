@@ -13,3 +13,9 @@ An educational library with different hash and cryptographic functions
 #### Cryptographic functions
 
 1. ROT
+2. DES 
+
+
+#### Cryptographic attacks
+
+1. MITM for DES (with 56 known bits)
