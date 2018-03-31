@@ -9,6 +9,8 @@
 #include "Primitives.h"
 #include "bignum.h"
 #include "DES.h"
+#include "RSA.h"
+#include "Base64.h"
 #include <sstream>
 #include <bitset>
 
@@ -38,11 +40,12 @@ namespace CryptoLibtest
 		}
 		TEST_METHOD(MD5_Files)
 		{
-			static char* names[] = { "1.testfile", "2.testfile", "3.testfile" };
+
+			static char* names[] = { "../CryptoLibTest/testfile/1.testfile", "../CryptoLibTest/testfile/2.testfile", "../CryptoLibTest/testfile/3.testfile" };
 			static char* md5s[] = {
-				"b6a8cab2780cb81b45864ffaf9157bec",
-				"9a55ca8879302a5add9437559c45aa04",
-				"9d9c90870bc46ad65baf0f3977e7590f"
+				"0cc175b9c0f1b6a831c399e269772661",
+				"49aa794b8a34d3a11aa5b1cbb2fc4a38",
+				"cc45353d6b0041430a9857e418459984"
 			};
 
 			for (int i = 0; i < sizeof(names) / sizeof(char*); i++)
@@ -76,11 +79,11 @@ namespace CryptoLibtest
 		}
 		TEST_METHOD(SHA1_Files)
 		{
-			static char* names[] = { "1.testfile", "2.testfile", "3.testfile" };
+			static char* names[] = { "../CryptoLibTest/testfile/1.testfile", "../CryptoLibTest/testfile/2.testfile", "../CryptoLibTest/testfile/3.testfile" };
 			static char* shas[] = {
-				"dab286035f38f3498e0c174bfb5a0d0ea7905666",
-				"b6392ceaba9ec878f67a0207d85e4359c3ab0bfe",
-				"dec5842d07bbd00edf564fe27c14118ec9ecc77f"
+				"86f7e437faa5a7fce15d1ddcb9eaeaea377667b8",
+				"9af5cea30c1112ee1ded9c40677703e4b74894a5",
+				"633ca8e4881b577ecece13e49904afe35627947d"
 			};
 
 			for (int i = 0; i < sizeof(names) / sizeof(char*); i++)
@@ -114,11 +117,11 @@ namespace CryptoLibtest
 		}
 		TEST_METHOD(SHA256_Files)
 		{
-			static char* names[] = { "1.testfile", "2.testfile", "3.testfile" };
+			static char* names[] = { "../CryptoLibTest/testfile/1.testfile", "../CryptoLibTest/testfile/2.testfile", "../CryptoLibTest/testfile/3.testfile" };
 			static char* shas[] = {
-				"c19325315346b44052892afce0bbd26ed507329fa1dae993e275a6b678c2fd77",
-				"89dc7fd8d628ab7771a9704dda7d548ba42ef1382c5acec4a08f663fc5105f6f",
-				"704138bec89cf9e7f00fbce100dbc09cf133d16dc0203806392f0e153c43c68c"
+				"ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
+				"65f3d76d631d833714b4ac08b8543d31223d02cc274a2a127dd7ab6144f3e61d",
+				"dc13dfb2b9d3d0f1ff27339a76b23a33084e2e671136289a4cb738a95f8059cf"
 			};
 
 			for (int i = 0; i < sizeof(names) / sizeof(char*); i++)
@@ -334,7 +337,7 @@ namespace CryptoLibtest
 		TEST_METHOD(DES_SubkeysTest) {
 			uint64_t key = 0x4b41534849534142;
 			DES::KEY_SET key_set;
-			DES::DesKeySchedule(&key, &key_set);
+			CryptoLib::DES::DesKeySchedule(key, &key_set);
 			uint64_t subkeys[] = { 
 				0xa092c20ab140L, 0xa012524c00abL, 0x245a50065849L, 0x67150029170L, 
 				0xe4551818d20L, 0x4f4109480e10L, 0xb818959401cL, 0x19088b015088L, 
@@ -353,8 +356,8 @@ namespace CryptoLibtest
 			size_t sz = sizeof(c_message);
 			uint64_t* result = new uint64_t[sz / sizeof(uint64_t)]();
 			uint64_t* decrypted = new uint64_t[sz / sizeof(uint64_t)]();
-			DES::DesEncrypt(message, sz, result, key);
-			DES::DesDecrypt(result, sz, decrypted, key);
+			CryptoLib::DES::DesEncrypt(message, sz, result, key);
+			CryptoLib::DES::DesDecrypt(result, sz, decrypted, key);
 			int res = memcmp(message, decrypted, sz);
 			Assert::IsTrue(res == 0);
 		}
@@ -367,13 +370,13 @@ namespace CryptoLibtest
 			size_t sz = sizeof(c_message);
 			uint64_t* round1 = new uint64_t[sz / sizeof(uint64_t)]();
 			uint64_t* round2 = new uint64_t[sz / sizeof(uint64_t)]();
-			DES::DesEncrypt(message, sz, round1, key1);
-			DES::DesEncrypt(round1, sz, round2, key2);
+			CryptoLib::DES::DesEncrypt(message, sz, round1, key1);
+			CryptoLib::DES::DesEncrypt(round1, sz, round2, key2);
 			uint64_t known_key1 = 0x3132333435363700;
 			uint64_t known_key2 = 0x3837363534333200;
 			uint64_t result_key1;
 			uint64_t result_key2;
-			bool res = DES::MITMAttack(
+			bool res = CryptoLib::DES::MITMAttack(
 				known_key1, 
 				known_key2, 
 				message, 
@@ -389,6 +392,96 @@ namespace CryptoLibtest
 			sprintf(arr2, "0x%I64X", result_key2);
 			Logger::WriteMessage(arr);
 			Logger::WriteMessage(arr2);
+		}
+	};
+
+	TEST_CLASS(RSA_TEST) {
+	public:
+		std::string toStr(NTL::ZZ val) {
+			std::stringstream ss;
+			ss << val;
+			return std::string(ss.str());
+		}
+
+		void byte(unsigned char val) {
+			char vv[10] = { 0 };
+			sprintf(vv, "%02X", val);
+			Logger::WriteMessage(vv);
+		}
+
+		TEST_METHOD(RsaTest) {
+			RSA::RSA_CONTEXT ctx;
+			RSA::RSAKeyGen(&ctx);
+			Logger::WriteMessage(toStr(ctx.publicExponent).c_str());
+			Logger::WriteMessage(toStr(ctx.privateExponent).c_str());
+			Logger::WriteMessage(toStr(ctx.publicModulus).c_str());
+			
+
+			char* msg = "hello";
+			char res[2000] = { 0 };
+			size_t res_len = 0;
+			RSA::RSAEncrypt(msg,5,res,&res_len,&ctx);
+
+			size_t len = 0;
+			char decr[2000] = { 0 };
+			RSA::RSADecrypt(res, res_len, decr, &len, &ctx);
+			Logger::WriteMessage(decr);
+		}
+	};
+
+	TEST_CLASS(B64_TEST) {
+	public:
+		TEST_METHOD(B64Encode_Test) {
+			char* strings[] = {
+				"helloworld",
+				"f",
+				"fo",
+				"foo",
+				"foob",
+				"fooba",
+				"foobar",
+				"base64",
+				"foobarb",
+				"foobarba",
+				"foobarbar",
+				"foobarbarf",
+				"foobarbarfo",
+				"foobarbarfoo",
+				"\x01\x01\x02\x03\x04\x05",
+				"\x99\xFF\x11\x22\x33\x44\x55\x66\x77\x88\xAA",
+				"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff",
+				"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe",
+				"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd",
+				"\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\x7f\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb"
+			};
+
+			char* correct[] = { 
+				"aGVsbG93b3JsZA==", 
+				"Zg==", 
+				"Zm8=", 
+				"Zm9v", 
+				"Zm9vYg==", 
+				"Zm9vYmE=", 
+				"Zm9vYmFy", 
+				"YmFzZTY0",
+				"Zm9vYmFyYg==", 
+				"Zm9vYmFyYmE=", 
+				"Zm9vYmFyYmFy", 
+				"Zm9vYmFyYmFyZg==", 
+				"Zm9vYmFyYmFyZm8=", 
+				"Zm9vYmFyYmFyZm9v", 
+				"AQECAwQF", 
+				"mf8RIjNEVWZ3iKo=",
+				"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/",
+				"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f4=",
+				"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/Q==",
+				"AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vs="
+
+			};
+			for (int i = 0; i < sizeof(strings) / sizeof(char*); i++) {
+				Logger::WriteMessage(Base64::Base64Enconde(strings[i], strlen(strings[i])).c_str());
+				Assert::AreEqual(correct[i], Base64::Base64Enconde(strings[i], strlen(strings[i])).c_str(), "Invalid conv", LINE_INFO());
+			}
 		}
 	};
 };

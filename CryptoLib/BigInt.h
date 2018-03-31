@@ -35,7 +35,7 @@ namespace CryptoLib
 
 		size_t GetLength() const;
 		std::string GetValue() const;
-		void SetValue(std::string newValue);
+		void SetValue(const std::string& newValue);
 		bool IsNegative() const;
 		BigInt Abs() const;
 

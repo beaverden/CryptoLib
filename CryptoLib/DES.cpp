@@ -1,23 +1,23 @@
 #include "stdafx.h"
 #include "DES.h"
 
-void DES::DesKeySchedule(
-	uint64_t* key, 
+void CryptoLib::DES::DesKeySchedule(
+	uint64_t key, 
 	KEY_SET* key_set
 ) 
 {
 	uint64_t permuted_key = 0;
-	PERMUTE((*key), permuted_key, DES::PC1, 56);
+	PERMUTE(key, permuted_key, DES::PC1, 56); 
 	uint64_t Cn = (permuted_key & FIRST_28_BIT);
 	uint64_t Dn = (permuted_key  & SECOND_28_BIT) << 28;
 	for (int i = 0; i < 16; i++) {
 		for (int j = 0; j < KEY_LSHIFT[i]; j++) {
-			Cn = LSHIFT(Cn);
-			Dn = LSHIFT(Dn);
+			LSHIFT(Cn);
+			LSHIFT(Dn);
 		}
 		uint64_t combined = (Cn | (Dn >> 28));
 		uint64_t Kn = 0;
-		PERMUTE(combined, Kn, DES::PC2, 48);
+		PERMUTE(combined, Kn, DES::PC2, 48); 
 		key_set->keys[i] = Kn;
 	}
 }
@@ -28,13 +28,13 @@ uint64_t get_shifted(uint64_t perm, uint64_t group_id)
 	uint64_t row = ((group & BIT_NO_6) >> 4) | (group & BIT_NO_1);
 	uint64_t column = (group & BIT_NO_2345) >> 1;
 	uint64_t index = row * 16 + column;
-	return DES::REF_BOX[group_id][index];
+	return CryptoLib::DES::REF_BOX[group_id][index];
 }
 
-uint64_t DES::Feistel(uint64_t Rn, uint64_t Kn)
+uint64_t CryptoLib::DES::Feistel(uint64_t Rn, uint64_t Kn)
 {
 	uint64_t permutation = 0;
-	PERMUTE(Rn, permutation, DES::E, 48);
+	PERMUTE(Rn, permutation, DES::E, 48); 
 	permutation ^= Kn;
 
 	uint64_t substitute =
@@ -48,22 +48,22 @@ uint64_t DES::Feistel(uint64_t Rn, uint64_t Kn)
 		get_shifted(permutation, 7) << 0;
 	substitute <<= 32;
 	uint64_t permuted_result = 0;
-	PERMUTE(substitute, permuted_result, DES::P, 32);
+	PERMUTE(substitute, permuted_result, DES::P, 32); 
 	return permuted_result;
 }
 
 
 
-void DES::DesEncryptBlock(
+void CryptoLib::DES::DesEncryptBlock(
 	uint64_t message,
 	uint64_t key,
 	uint64_t* result
 )
 {
 	DES::KEY_SET key_set;
-	DES::DesKeySchedule(&key, &key_set);
+	DES::DesKeySchedule(key, &key_set);
 	uint64_t initial_permutation = 0;
-	PERMUTE(message, initial_permutation, DES::IP, 64);
+	PERMUTE(message, initial_permutation, DES::IP, 64); 
 	uint64_t Ln = (initial_permutation & FIRST_32_BIT);
 	uint64_t Rn = ((initial_permutation & SECOND_32_BIT) << 32);
 	for (int i = 0; i < 16; i++) 
@@ -75,20 +75,20 @@ void DES::DesEncryptBlock(
 	}
 	uint64_t reversed = Rn | (Ln >> 32);
 	uint64_t permuted = 0;
-	PERMUTE(reversed, permuted, DES::IP2, 64);
+	PERMUTE(reversed, permuted, DES::IP2, 64); 
 	(*result) = permuted;
 }
 
-void DES::DesDecryptBlock(
+void CryptoLib::DES::DesDecryptBlock(
 	uint64_t message,
 	uint64_t key,
 	uint64_t* result
 )
 {
 	DES::KEY_SET key_set;
-	DES::DesKeySchedule(&key, &key_set);
+	DES::DesKeySchedule(key, &key_set);
 	uint64_t initial_permutation = 0;
-	PERMUTE(message, initial_permutation, DES::IP, 64);
+	PERMUTE(message, initial_permutation, DES::IP, 64); 
 	uint64_t Ln = (initial_permutation & FIRST_32_BIT);
 	uint64_t Rn = ((initial_permutation & SECOND_32_BIT) << 32);
 	for (int i = 15; i >= 0; i--)
@@ -100,11 +100,11 @@ void DES::DesDecryptBlock(
 	}
 	uint64_t reversed = Rn | (Ln >> 32);
 	uint64_t permuted = 0;
-	PERMUTE(reversed, permuted, DES::IP2, 64);
+	PERMUTE(reversed, permuted, DES::IP2, 64); 
 	(*result) = permuted;
 }
 
-void DES::DesEncrypt(
+void CryptoLib::DES::DesEncrypt(
 	uint64_t* message,
 	size_t message_length,
 	uint64_t* ciphertext,
@@ -117,7 +117,7 @@ void DES::DesEncrypt(
 	}
 }
 
-void DES::DesDecrypt(
+void CryptoLib::DES::DesDecrypt(
 	uint64_t* ciphertext,
 	size_t ciphertext_length,
 	uint64_t* message,
@@ -130,7 +130,7 @@ void DES::DesDecrypt(
 	}
 }
 
-bool DES::MITMAttack(
+bool CryptoLib::DES::MITMAttack(
 	uint64_t known_key1,
 	uint64_t known_key2,
 	uint64_t* plaintext,

@@ -16,7 +16,7 @@ BigInt::~BigInt()
 // TO DO invalid numbers exceptions
 BigInt::BigInt(std::string s)
 {
-	this->number = "";
+	this->number.clear();
 	size_t off = 0;
 	if (s[0] == '-')
 	{
@@ -29,7 +29,7 @@ BigInt::BigInt(std::string s)
 		if (s[off] >= '0' && s[off] <= '9') this->number += s[off];
 		off++;
 	}
-	if (this->number == "-" || this->number == "") this->number = "0";
+	if (this->number == "-" || this->number.empty()) this->number = "0";
 }
 
 BigInt::BigInt(int64_t s)
@@ -47,7 +47,7 @@ std::string BigInt::GetValue() const
 	return this->number;
 }
 
-void BigInt::SetValue(std::string newValue)
+void BigInt::SetValue(const std::string& newValue)
 {
 	this->number = newValue;
 }
@@ -159,7 +159,7 @@ BigInt BigInt::operator+(const BigInt& other) const
 	while (b.length() < a.length()) b = "0" + b;
 	std::string c;
 	int r = 0, t;
-	for (int i = 0; i<a.length(); i++) 
+	for (size_t i = 0; i<a.length(); i++) 
 	{
 		int x = (a[a.length() - i - 1] - '0'),
 			y = (b[a.length() - i - 1] - '0');
@@ -285,7 +285,7 @@ BigInt BigInt::operator-(const BigInt& other) const
 	}
 	std::string res;
 
-	for (int i = 0; i < a.length(); i++) 
+	for (size_t i = 0; i < a.length(); i++) 
 	{
 		int x = a[a.length() - i - 1] - '0',
 			y = b[a.length() - i - 1] - '0',

@@ -72,7 +72,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\CryptoLib\CryptoLib;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CryptoLib;$(SolutionDir)CryptoLib\Lib\NTL\include;$(IncludePath)</IncludePath>
+    <SourcePath>$(SourcePath)</SourcePath>
+    <LibraryPath>$(SolutionDir)CryptoLib\Lib\NTL;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -85,14 +87,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)Lib\NTL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>NTL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)CryptoLib\Lib\NTL\NTL.lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,11 +145,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base64.h" />
     <ClInclude Include="BigInt.h" />
     <ClInclude Include="DES.h" />
     <ClInclude Include="MD5.h" />
     <ClInclude Include="Primitives.h" />
     <ClInclude Include="ROT.h" />
+    <ClInclude Include="RSA.h" />
     <ClInclude Include="SHA1.h" />
     <ClInclude Include="SHA256.h" />
     <ClInclude Include="stdafx.h" />
@@ -152,12 +159,14 @@
     <ClInclude Include="utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Base64.cpp" />
     <ClCompile Include="BigInt.cpp" />
     <ClCompile Include="CryptoLib.cpp" />
     <ClCompile Include="DES.cpp" />
     <ClCompile Include="MD5.cpp" />
     <ClCompile Include="Primitives.cpp" />
     <ClCompile Include="ROT.cpp" />
+    <ClCompile Include="RSA.cpp" />
     <ClCompile Include="SHA1.cpp" />
     <ClCompile Include="SHA256.cpp" />
     <ClCompile Include="stdafx.cpp">
