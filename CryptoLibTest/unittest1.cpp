@@ -426,6 +426,21 @@ namespace CryptoLibtest
 			char decr[2000] = { 0 };
 			RSA::RSADecrypt(res, res_len, decr, &len, &ctx);
 			Logger::WriteMessage(decr);
+
+			RSA::ExportPublicKey(&ctx, "output.pub.rsa");
+			RSA::ExportPrivateKey(&ctx, "output.prv.rsa");
+
+			RSA::RSA_CONTEXT imp_ctx;
+			RSA::ImportPublicKey(&imp_ctx, "output.pub.rsa");
+			Assert::IsTrue(
+				ctx.publicExponent == imp_ctx.publicExponent &&
+				ctx.publicModulus == imp_ctx.publicModulus
+			);
+			RSA::ImportPrivateKey(&imp_ctx, "output.prv.rsa");
+			Assert::IsTrue(
+				ctx.privateExponent == imp_ctx.privateExponent &&
+				ctx.publicModulus == imp_ctx.publicModulus
+			);
 		}
 	};
 
@@ -479,8 +494,9 @@ namespace CryptoLibtest
 
 			};
 			for (int i = 0; i < sizeof(strings) / sizeof(char*); i++) {
-				Logger::WriteMessage(Base64::Base64Enconde(strings[i], strlen(strings[i])).c_str());
-				Assert::AreEqual(correct[i], Base64::Base64Enconde(strings[i], strlen(strings[i])).c_str(), "Invalid encode", LINE_INFO());
+				std::string out;
+				Base64::Base64Encode(strings[i], strlen(strings[i]), out);
+				Assert::AreEqual(correct[i], out.c_str(), "Invalid encode", LINE_INFO());
 			}
 		}
 
@@ -533,10 +549,10 @@ namespace CryptoLibtest
 			};
 			for (int i = 0; i < sizeof(strings) / sizeof(char*); i++) {
 				//Logger::WriteMessage(Base64::Base64Enconde(strings[i], strlen(strings[i])).c_str());
-				char res[1000] = { 0 };
 				size_t len = 0;
-				CryptoLib::Base64::Base64Decode(strings[i], strlen(strings[i]), res, &len);
+				char* res = (char*)CryptoLib::Base64::Base64Decode(strings[i], strlen(strings[i]), &len);
 				Assert::AreEqual(correct[i], res, "Invalid decode", LINE_INFO());
+				delete[] res;
 			}
 		}
 	};

@@ -1,14 +1,16 @@
 #include "stdafx.h"
 #include "Base64.h"
 
-std::string CryptoLib::Base64::Base64Enconde(
+bool CryptoLib::Base64::Base64Encode(
 	void* input_buffer,
 	size_t input_length,
+	std::string& output,
 	char* alphabet,
+	size_t alphabet_length,
 	char padding
 )
 {
-	std::string result = "";
+	output = "";
 	if (alphabet == nullptr) {
 		alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	}
@@ -43,41 +45,52 @@ std::string CryptoLib::Base64::Base64Enconde(
 			break;
 		}
 		group_type = (group_type + 1) % 4;
-		result += (char)alphabet[value];
+		if (value >= alphabet_length) {
+			return false;
+		}
+		output += (char)alphabet[value];
 	}
-	while (result.length() % 4 != 0) 
+	while (output.length() % 4 != 0)
 	{
-		result += padding;
+		output += padding;
 	}
-	return result;
+	return true;
 }
 
-void CryptoLib::Base64::Base64Decode(
+void* CryptoLib::Base64::Base64Decode(
 	void* input_buffer,
 	size_t input_length,
-	void* output_buffer,
 	size_t* output_length,
 	char* alphabet,
 	size_t alphabet_length,
 	char padding
 )
 {
+	if ((input_length & 0x3) != 0) {
+		return nullptr;
+	}
 	if (alphabet == nullptr) {
 		alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	}
 	uint8_t assoc[256] = { 0 };
+	memset(assoc, 0xFF, 256);
 	for (size_t i = 0; i < alphabet_length; i++) {
 		assoc[alphabet[i]] = i;
 	}
 
 	(*output_length) = (input_length * 3) / 4;
-	memset(output_buffer, 0, (*output_length));
-
 	uint8_t* in_buff = (uint8_t*)(input_buffer);
-	uint8_t* out_buff = (uint8_t*)(output_buffer);
+	uint8_t* out_buff = new uint8_t[(*output_length)+1];
+	memset(out_buff, 0, (*output_length)+1);
+
+	
 	int group_type = 0;
 	int out_index = 0;
 	for (size_t i = 0; i < input_length; i++) {
+		if (assoc[in_buff[i]] == 0xFF && in_buff[i] != padding) {
+			delete[] out_buff;
+			return nullptr;
+		}
 		uint8_t value = assoc[in_buff[i]];
 		if (in_buff[i] == '=') break;
 		switch (group_type) {
@@ -101,4 +114,5 @@ void CryptoLib::Base64::Base64Decode(
 		}
 		group_type = (group_type + 1) % 4;
 	}
+	return out_buff;
 }

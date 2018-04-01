@@ -2,6 +2,31 @@
 #include "RSA.h"
 #include <sstream>
 
+
+std::string CryptoLib::RSA::ZZToB64(const NTL::ZZ& num) {
+	size_t output_length = NTL::NumBytes(num);
+	uint8_t* output = new uint8_t[output_length];
+	NTL::BytesFromZZ(output, num, output_length);
+	std::string result;
+	CryptoLib::Base64::Base64Encode(
+		output,
+		output_length,
+		result
+	);
+	return result;
+}
+
+NTL::ZZ CryptoLib::RSA::B64ToZZ(const std::string& input) {
+	size_t decoded_len = 0;
+	void* decoded = CryptoLib::Base64::Base64Decode(
+		(void*)input.c_str(),
+		input.length(),
+		&decoded_len
+	);
+	NTL::ZZ res = NTL::ZZFromBytes((uint8_t*)decoded, decoded_len);
+	return res;
+}
+
 void CryptoLib::RSA::RSAKeyGen(CryptoLib::RSA::RSA_CONTEXT* ctx) 
 {
 	NTL::ZZ prime1;
@@ -55,4 +80,55 @@ void CryptoLib::RSA::RSADecrypt(
 	);
 	NTL::BytesFromZZ((unsigned char*)plaintext, plaintext_integer, NTL::NumBytes(plaintext_integer));
 	(*plaintext_length) = NTL::NumBytes(plaintext_integer);
+}
+
+
+
+void CryptoLib::RSA::ExportPublicKey(RSA_CONTEXT* ctx, char* file_path) {
+	std::string exp_enc = ZZToB64(ctx->publicExponent);
+	std::string mod_enc = ZZToB64(ctx->publicModulus);
+
+	std::ofstream f(file_path, std::ios::binary);
+	f << "-----BEGIN RSA PRIVATE KEY-----\n"
+		<< exp_enc << std::endl << mod_enc << std::endl
+		<< "-----END RSA PRIVATE KEY-----";
+	f.close();
+}
+
+void CryptoLib::RSA::ExportPrivateKey(RSA_CONTEXT* ctx, char* file_path) {
+	std::string prv_enc = ZZToB64(ctx->privateExponent);
+	std::string mod_enc = ZZToB64(ctx->publicModulus);
+
+	std::ofstream f(file_path, std::ios::binary);
+	f	<< "-----BEGIN RSA PRIVATE KEY-----\n"
+		<< prv_enc << std::endl << mod_enc << std::endl
+		<< "-----END RSA PRIVATE KEY-----";
+	f.close();
+}
+
+
+void CryptoLib::RSA::ImportPublicKey(RSA_CONTEXT* ctx, char* file_path) {
+	std::ifstream f(file_path, std::ios::binary);
+	std::string exp_enc;
+	std::string mod_enc;
+	std::string temp;
+	std::getline(f, temp);
+	std::getline(f, exp_enc);
+	std::getline(f, mod_enc);
+	f.close();
+	ctx->publicExponent = B64ToZZ(exp_enc);
+	ctx->publicModulus = B64ToZZ(mod_enc);
+}
+
+void CryptoLib::RSA::ImportPrivateKey(RSA_CONTEXT* ctx, char* file_path) {
+	std::ifstream f(file_path, std::ios::binary);
+	std::string prv_enc;
+	std::string mod_enc;
+	std::string temp;
+	std::getline(f, temp);
+	std::getline(f, prv_enc);
+	std::getline(f, mod_enc);
+	f.close();
+	ctx->privateExponent = B64ToZZ(prv_enc);
+	ctx->publicModulus = B64ToZZ(mod_enc);
 }
