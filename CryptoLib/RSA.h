@@ -51,7 +51,7 @@ namespace CryptoLib {
 			RSA_CONTEXT* ctx
 		);
 
-		CRYPTO_API bool WiennerAttack(
+		CRYPTO_API bool WienerAttack(
 			RSA_CONTEXT* ctx
 		);
 

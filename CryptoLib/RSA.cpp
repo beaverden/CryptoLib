@@ -280,7 +280,7 @@ std::vector<std::pair<NTL::ZZ, NTL::ZZ>> CryptoLib::RSA::Convergents(const std::
 	return convergents;
 }
 
-bool CryptoLib::RSA::WiennerAttack(RSA_CONTEXT* ctx) {
+bool CryptoLib::RSA::WienerAttack(RSA_CONTEXT* ctx) {
 	auto cont = ContinuedFraction(ctx->publicExponent, ctx->publicModulus);
 	auto conv = Convergents(cont);
 	NTL::ZZ phi;

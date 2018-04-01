@@ -529,7 +529,7 @@ namespace CryptoLibtest
 			RSA::RSA_CONTEXT attack_ctx;
 			attack_ctx.publicExponent = ctx.publicExponent;
 			attack_ctx.publicModulus = ctx.publicModulus;
-			Assert::IsTrue(RSA::WiennerAttack(&attack_ctx), L"Could not find keys", LINE_INFO());
+			Assert::IsTrue(RSA::WienerAttack(&attack_ctx), L"Could not find keys", LINE_INFO());
 			ss.str(std::string());
 			ss.clear();
 			ss	<< "Found p = " << ctx.privateP << std::endl
