@@ -415,7 +415,9 @@ namespace CryptoLibtest
 			Logger::WriteMessage(toStr(ctx.publicExponent).c_str());
 			Logger::WriteMessage(toStr(ctx.privateExponent).c_str());
 			Logger::WriteMessage(toStr(ctx.publicModulus).c_str());
-			
+			Logger::WriteMessage(toStr(ctx.privateP).c_str());
+			Logger::WriteMessage(toStr(ctx.privateQ).c_str());
+			ctx.decryptionType = RSA::RSA_DECRYPTION_TYPE::DECRYPTION_CRT;
 
 			char* msg = "hello";
 			char res[2000] = { 0 };
@@ -441,6 +443,108 @@ namespace CryptoLibtest
 				ctx.privateExponent == imp_ctx.privateExponent &&
 				ctx.publicModulus == imp_ctx.publicModulus
 			);
+			Assert::IsTrue(
+				ctx.privateP == imp_ctx.privateP &&
+				ctx.privateQ == imp_ctx.privateQ
+			);
+		}
+
+		TEST_METHOD(Rsa_Continued) {
+			NTL::ZZ a(73);
+			NTL::ZZ b(95);
+			std::stringstream ss;
+			std::vector<NTL::ZZ> v1 = CryptoLib::RSA::ContinuedFraction(a, b);
+			std::vector<NTL::ZZ> actual1{ 
+				NTL::ZZ(0), 
+				NTL::ZZ(1),
+				NTL::ZZ(3),
+				NTL::ZZ(3),
+				NTL::ZZ(7),
+			};
+			Assert::IsTrue(v1 == actual1, L"Vectors 1 invalid", LINE_INFO());
+
+			a = 17993;
+			b = 90581;
+
+			v1 = CryptoLib::RSA::ContinuedFraction(a, b);
+			actual1 = {
+				NTL::ZZ(0),
+				NTL::ZZ(5),
+				NTL::ZZ(29),
+				NTL::ZZ(4),
+				NTL::ZZ(1),
+				NTL::ZZ(3),
+				NTL::ZZ(2),
+				NTL::ZZ(4),
+				NTL::ZZ(3)
+			};
+			Assert::IsTrue(v1 == actual1, L"Vectors 1 invalid", LINE_INFO());
+		}
+
+		TEST_METHOD(Rsa_Covnergence) {
+			std::vector<NTL::ZZ> nums{  // 17993/90581
+				NTL::ZZ(0),
+				NTL::ZZ(5),
+				NTL::ZZ(29),
+				NTL::ZZ(4),
+				NTL::ZZ(1),
+				NTL::ZZ(3),
+				NTL::ZZ(2),
+				NTL::ZZ(4),
+				NTL::ZZ(3)
+			};
+			std::vector<std::pair<NTL::ZZ, NTL::ZZ>> actual{
+				std::make_pair(NTL::ZZ(0), NTL::ZZ(1)),
+				std::make_pair(NTL::ZZ(1), NTL::ZZ(5)),
+				std::make_pair(NTL::ZZ(29), NTL::ZZ(146)),
+				std::make_pair(NTL::ZZ(117), NTL::ZZ(589)),
+				std::make_pair(NTL::ZZ(146), NTL::ZZ(735)),
+				std::make_pair(NTL::ZZ(555), NTL::ZZ(2794)),
+				std::make_pair(NTL::ZZ(1256), NTL::ZZ(6323)),
+				std::make_pair(NTL::ZZ(5579), NTL::ZZ(28086)),
+				std::make_pair(NTL::ZZ(17993), NTL::ZZ(90581))
+			};
+			auto result = CryptoLib::RSA::Convergents(nums);
+			Assert::IsTrue(result == actual, L"Invalid conv values", LINE_INFO());
+		}
+
+		TEST_METHOD(Rsa_Wienner) {
+			RSA::RSA_CONTEXT ctx;
+			RSA::RSAKeyGenWeak(&ctx);
+			std::stringstream ss;
+			ss	<< "e = " << ctx.publicExponent << std::endl
+				<< "d = " << ctx.privateExponent << std::endl
+				<< "n = " << ctx.publicModulus << std::endl
+				<< "p = " << ctx.privateP << std::endl
+				<< "q = " << ctx.privateQ << std::endl;
+			Logger::WriteMessage(ss.str().c_str());
+
+			char* msg = "hello world";
+			char encrypted[5000] = { 0 };
+			size_t encrypted_len = 0;
+			
+			RSA::RSAEncrypt(msg, strlen(msg), encrypted, &encrypted_len, &ctx);
+
+			// Generate new keys, perform the attack
+			RSA::RSA_CONTEXT attack_ctx;
+			attack_ctx.publicExponent = ctx.publicExponent;
+			attack_ctx.publicModulus = ctx.publicModulus;
+			Assert::IsTrue(RSA::WiennerAttack(&attack_ctx), L"Could not find keys", LINE_INFO());
+			ss.str(std::string());
+			ss.clear();
+			ss	<< "Found p = " << ctx.privateP << std::endl
+				<< "Found q = " << ctx.privateQ << std::endl;
+			Logger::WriteMessage("Found p and q");
+			Logger::WriteMessage(ss.str().c_str());
+			Assert::IsTrue(ctx.privateP == attack_ctx.privateP
+				&& ctx.privateQ == attack_ctx.privateQ,
+				L"Keys pq don't match",
+				LINE_INFO()
+			);
+			char decrypted[5000] = { 0 };
+			size_t decryped_len = 0;
+			RSA::RSADecrypt(encrypted, encrypted_len, decrypted, &decryped_len, &attack_ctx);
+			Assert::IsTrue(memcmp(msg, decrypted, decryped_len), L"Decrypted msg doesn't match", LINE_INFO());
 		}
 	};
 

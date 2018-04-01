@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="Base64.h" />
     <ClInclude Include="BigInt.h" />
+    <ClInclude Include="CryptoLib.h" />
     <ClInclude Include="DES.h" />
     <ClInclude Include="MD5.h" />
     <ClInclude Include="Primitives.h" />

@@ -1,5 +1,6 @@
 #pragma once
 #include "utility.h"
+#include "CryptoLib.h"
 #define SHA256_LEN 64
 
 /*
@@ -15,6 +16,6 @@
 
 namespace CryptoLib
 {
-	__declspec(dllexport) char* SHA256(void* buffer, size_t buffer_size);
-	__declspec(dllexport) char* SHA256FromFile(char* file_path);
+	CRYPTO_API char* SHA256(void* buffer, size_t buffer_size);
+	CRYPTO_API char* SHA256FromFile(char* file_path);
 }

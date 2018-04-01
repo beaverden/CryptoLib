@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <map>
+#include "CryptoLib.h"
 #include "MD5.h"
 
 #define CHAR_BIT			8
@@ -156,36 +157,36 @@ namespace CryptoLib {
 			33, 1, 41, 9, 49, 17, 57, 25
 		};
 
-		__declspec(dllexport) void DesKeySchedule(
+		CRYPTO_API void DesKeySchedule(
 			uint64_t key,
 			KEY_SET*  key_set
 		);
-		__declspec(dllexport) void DesEncryptBlock(
+		CRYPTO_API void DesEncryptBlock(
 			uint64_t message,
 			uint64_t key,
 			uint64_t* result
 		);
-		__declspec(dllexport) void DesDecryptBlock(
+		CRYPTO_API void DesDecryptBlock(
 			uint64_t message,
 			uint64_t key,
 			uint64_t* result
 		);
 
-		__declspec(dllexport) void DesEncrypt(
+		CRYPTO_API void DesEncrypt(
 			uint64_t* message,
 			size_t message_length,
 			uint64_t* ciphertext,
 			uint64_t key
 		);
 
-		__declspec(dllexport) void DesDecrypt(
+		CRYPTO_API void DesDecrypt(
 			uint64_t* ciphertext,
 			size_t ciphertext_length,
 			uint64_t* message,
 			uint64_t key
 		);
 
-		__declspec(dllexport) bool MITMAttack(
+		CRYPTO_API bool MITMAttack(
 			uint64_t known_key1,
 			uint64_t known_key2,
 			uint64_t* plaintext,

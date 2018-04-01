@@ -1,11 +1,12 @@
 #pragma once
 #include "BigInt.h"
+#include "CryptoLib.h"
 
 namespace CryptoLib
 {
 	namespace Primitives
 	{
-		__declspec(dllexport) struct Vector2D
+		CRYPTO_API struct Vector2D
 		{
 			BigInt alpha;
 			BigInt beta;
@@ -16,11 +17,11 @@ namespace CryptoLib
 			Vector2D operator*(const BigInt& other);
 		};
 
-		__declspec(dllexport) BigInt POW(_In_ const BigInt &num, _In_ const BigInt &power);
-		__declspec(dllexport) BigInt POWModM(_In_ const BigInt &num, _In_ const BigInt &power, _In_ const BigInt &m);
-		__declspec(dllexport) BigInt MathematicalModulo(const BigInt& a, const BigInt& b);
-		__declspec(dllexport) BigInt GCD(_In_ const BigInt &a, _In_ const BigInt &b);
-		__declspec(dllexport) Vector2D ExtendedGCD(_In_ const BigInt &a, _In_ const BigInt &b, _Out_opt_ BigInt* gcd_result = nullptr);
-		__declspec(dllexport) BigInt InverseModM(_In_ const BigInt &a, _In_ const BigInt &m);
+		CRYPTO_API BigInt POW(_In_ const BigInt &num, _In_ const BigInt &power);
+		CRYPTO_API BigInt POWModM(_In_ const BigInt &num, _In_ const BigInt &power, _In_ const BigInt &m);
+		CRYPTO_API BigInt MathematicalModulo(const BigInt& a, const BigInt& b);
+		CRYPTO_API BigInt GCD(_In_ const BigInt &a, _In_ const BigInt &b);
+		CRYPTO_API Vector2D ExtendedGCD(_In_ const BigInt &a, _In_ const BigInt &b, _Out_opt_ BigInt* gcd_result = nullptr);
+		CRYPTO_API BigInt InverseModM(_In_ const BigInt &a, _In_ const BigInt &m);
 	}
 }

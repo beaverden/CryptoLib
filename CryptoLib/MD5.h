@@ -1,4 +1,5 @@
 #pragma once
+#include "CryptoLib.h"
 #include "utility.h"
 #define MD5_LEN 32
 
@@ -15,7 +16,7 @@
 
 namespace CryptoLib
 {
-	__declspec(dllexport) char* MD5(void* buffer, size_t buffer_size);
-	__declspec(dllexport) char* MD5FromFile(char* file_path);
+	CRYPTO_API char* MD5(void* buffer, size_t buffer_size);
+	CRYPTO_API char* MD5FromFile(char* file_path);
 }
 

@@ -4,7 +4,7 @@
 #define CHAR_DEREF(buffer, index)\
 	(*(unsigned char*)((unsigned int)(buffer) + (index)))
 
-void ROT(
+void CryptoLib::ROT::ROT(
 	void* input,
 	size_t input_size,
 	void* output,
@@ -37,14 +37,4 @@ void ROT(
 		}
 		
 	}
-}
-
-void FrequencyAttack_ROT_English(
-	unsigned char* ciphertext,
-	unsigned int ciphertext_size,
-	unsigned char* plain_text,
-	unsigned int plain_text_size
-)
-{
-	const char* frequency = "etaoinshrdlcumwfgypbvkjxqz";
 }
