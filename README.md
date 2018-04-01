@@ -26,7 +26,7 @@ An educational library with different hash and cryptographic functions
 2. Wiener's Attack for RSA
 
 
-#### Documentation
+## Documentation
 
 ### RSA
 
